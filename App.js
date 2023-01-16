@@ -1,29 +1,41 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import {
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	Pressable,
+	Button,
+	View,
+} from "react-native";
 import React, { useEffect } from "react";
 import messaging from "@react-native-firebase/messaging";
 import {
 	requestUserPermission,
 	NotificationListener,
 } from "./src/utils/push-notification-helper";
+import notifee from "@notifee/react-native";
 import { Alert } from "react-native";
 
 export default function App() {
-	// useEffect(() => {
-	// 	const unsubscribe = messaging().onMessage(async remoteMessage => {
-	// 		Alert.alert("A new FCM message arrived!", JSON.stringify(remoteMessage));
-	// 	});
-
-	// 	return unsubscribe;
-	// }, []);
-
 	useEffect(() => {
 		requestUserPermission();
-		NotificationListener();
+		const unsubscribe = messaging().onMessage(async remoteMessage => {
+			console.log(remoteMessage);
+			await NotificationListener(remoteMessage);
+		});
+
+		return unsubscribe;
 	}, []);
+
+	const sendMessage = async () => {
+		return;
+	};
+
 	return (
 		<View style={styles.container}>
-			<Text>Open up App.js to start working on your app!</Text>
+			<TouchableOpacity style={{ elevation: 5 }} onPress={sendMessage}>
+				<Text style={{ elevation: 0 }}>Send</Text>
+			</TouchableOpacity>
 			<StatusBar style="auto" />
 		</View>
 	);

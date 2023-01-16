@@ -35,7 +35,7 @@ module.exports = {
 		web: {
 			favicon: "./assets/favicon.png",
 		},
-		plugins: ["@react-native-firebase/app"],
+		plugins: ["@react-native-firebase/app", "@notifee/react-native"],
 		extra: {
 			eas: {
 				projectId: "dac2e7fc-56fe-4bf7-90f9-dfd2da6f9c38",
