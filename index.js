@@ -3,9 +3,15 @@ import { AppRegistry } from "react-native";
 import messaging from "@react-native-firebase/messaging";
 import App from "./App";
 import notifee from "@notifee/react-native";
+import { NotificationListener } from "./src/utils/push-notification-helper";
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
 	console.log("Message handled in the background!", remoteMessage);
+	// await NotificationListener(remoteMessage);
+});
+
+notifee.onBackgroundEvent(async ({ type, detail }) => {
+	console.log("onBackgroundEvent", type, detail);
 });
 
 function HeadlessCheck({ isHeadless }) {

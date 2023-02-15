@@ -1,5 +1,6 @@
 import messaging from "@react-native-firebase/messaging";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AppState } from "react-native";
 import notifee, { AndroidImportance } from "@notifee/react-native";
 export async function requestUserPermission() {
 	const authStatus = await messaging().requestPermission();
@@ -18,7 +19,7 @@ export async function requestUserPermission() {
 	}
 }
 
-async function getFCMToken() {
+export async function getFCMToken() {
 	let fcmtoken = await AsyncStorage.getItem("fcmToken");
 	console.log("old token", fcmtoken);
 	if (!fcmtoken) {
@@ -48,17 +49,22 @@ export const NotificationListener = async remoteMessage => {
 	const channelId = await notifee.createChannel({
 		id: "order-notification",
 		name: "Food Order Notification",
-		sound: "default",
-		lights: false,
+		sound: "notification",
 		vibration: true,
-		importance: AndroidImportance.HIGH,
+		vibrationPattern: [300, 500],
 	});
 
 	await notifee.displayNotification({
-		title: title,
+		title: `<p style="color:#880002;"><b>${title}</b><p/>`,
+		subtitle: "🍔",
 		body: body,
 		android: {
 			channelId,
+
+			smallIcon: "ic_small_icon",
+			largeIcon: require("../../assets/icon.png"),
+
+			importance: AndroidImportance.HIGH,
 		},
 	});
 };
