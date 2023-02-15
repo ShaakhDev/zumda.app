@@ -39,10 +39,6 @@ export async function getFCMToken() {
 }
 
 export const NotificationListener = async remoteMessage => {
-	// messaging().onMessage(onMessageReceived);
-	// messaging().setBackgroundMessageHandler(onMessageReceived);
-	// messaging().getInitialNotification(onMessageReceived);
-	// notifee.onBackgroundEvent(onMessageReceived);
 	console.log("function is fired", remoteMessage);
 	const { title, body } = remoteMessage.notification;
 
