@@ -1,19 +1,25 @@
 import messaging from "@react-native-firebase/messaging";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { AppState } from "react-native";
+import notifee, { AndroidImportance } from "@notifee/react-native";
 export async function requestUserPermission() {
 	const authStatus = await messaging().requestPermission();
+
+	if (!messaging().isDeviceRegisteredForRemoteMessages) {
+		await messaging().registerDeviceForRemoteMessages();
+	}
 	const enabled =
 		authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
 		authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
 	if (enabled) {
 		console.log("Authorization status:", authStatus);
-		await getFCMToken();
+		const token = await getFCMToken();
+		//await api(/users/token)
 	}
 }
 
-async function getFCMToken() {
+export async function getFCMToken() {
 	let fcmtoken = await AsyncStorage.getItem("fcmToken");
 	console.log("old token", fcmtoken);
 	if (!fcmtoken) {
@@ -28,31 +34,33 @@ async function getFCMToken() {
 			console.log(err);
 		}
 	}
+
+	return fcmtoken;
 }
 
-export const NotificationListener = () => {
-	messaging().onNotificationOpenedApp(remoteMessage => {
-		console.log(
-			"Notification caused app to open from background state:",
-			remoteMessage.notification
-		);
+export const NotificationListener = async remoteMessage => {
+	console.log("function is fired", remoteMessage);
+	const { title, body } = remoteMessage.notification;
+
+	const channelId = await notifee.createChannel({
+		id: "order-notification",
+		name: "Food Order Notification",
+		sound: "notification",
+		vibration: true,
+		vibrationPattern: [300, 500],
 	});
 
-	messaging()
-		.getInitialNotification()
-		.then(remoteMessage => {
-			if (remoteMessage) {
-				console.log(
-					"Notification caused app to open from quit state:",
-					remoteMessage.notification
-				);
-			}
-		});
+	await notifee.displayNotification({
+		title: `<p style="color:#880002;"><b>${title}</b><p/>`,
+		subtitle: "🍔",
+		body: body,
+		android: {
+			channelId,
 
-	messaging().onMessage(async remoteMessage => {
-		console.log(
-			"notification on foreground state.....",
-			JSON.stringify(remoteMessage)
-		);
+			smallIcon: "ic_small_icon",
+			largeIcon: require("../../assets/icon.png"),
+
+			importance: AndroidImportance.HIGH,
+		},
 	});
 };
