@@ -68,9 +68,3 @@ export const NotificationListener = async remoteMessage => {
 		},
 	});
 };
-
-// const onMessageReceived = message => {
-// 	console.log(message);
-
-// 	notifee.displayNotification(JSON.parse(message.data.notifee));
-// };
